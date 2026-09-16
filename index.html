@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>untitled - Paint (Computer Graphics Studio)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Main Windows 95 Window Frame -->
+  <div class="win-window" id="appWindow">
+    
+    <!-- Title Bar -->
+    <div class="win-titlebar">
+      <div class="win-title-left">
+        <svg class="win-icon" viewBox="0 0 16 16">
+          <rect x="1" y="1" width="14" height="14" fill="#ffffff"/>
+          <path d="M2,3 L8,3 L6,7 L2,7 Z" fill="#b02e26"/>
+          <path d="M9,3 L14,3 L14,8 L10,8 Z" fill="#3ab3da"/>
+          <path d="M2,8 L7,8 L5,13 L2,13 Z" fill="#fed83d"/>
+          <path d="M8,9 L14,9 L13,14 L7,14 Z" fill="#80c71f"/>
+          <rect x="0" y="0" width="16" height="1" fill="#000"/>
+          <rect x="0" y="0" width="1" height="16" fill="#000"/>
+        </svg>
+        <span>untitled - Paint (Computer Graphics Studio)</span>
+      </div>
+      <div class="win-title-buttons">
+        <button class="win-btn-control" id="btnMinimize">_</button>
+        <button class="win-btn-control" id="btnMaximize">□</button>
+        <button class="win-btn-control" id="btnClose">✕</button>
+      </div>
+    </div>
+
+    <!-- Menu Bar -->
+    <div class="win-menubar">
+      <div class="menu-item">
+        <span>File</span>
+        <div class="menu-dropdown">
+          <div class="menu-drop-opt" id="menuFileNew"><span>New</span><span>Ctrl+N</span></div>
+          <div class="menu-drop-opt" id="menuFileSave"><span>Save PNG</span><span>Ctrl+S</span></div>
+          <div class="menu-separator"></div>
+          <div class="menu-drop-opt" id="menuFileCpp"><span>View C++ Code...</span></div>
+          <div class="menu-separator"></div>
+          <div class="menu-drop-opt" id="menuFileExit"><span>Exit</span></div>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span>Edit</span>
+        <div class="menu-dropdown">
+          <div class="menu-drop-opt" id="menuEditUndo"><span>Undo</span><span>Ctrl+Z</span></div>
+          <div class="menu-drop-opt" id="menuEditRedo"><span>Redo</span><span>Ctrl+Y</span></div>
+          <div class="menu-separator"></div>
+          <div class="menu-drop-opt" id="menuEditClear"><span>Clear Canvas</span></div>
+        </div>
+      </div>
+      <div class="menu-item">
+        <span>Algorithms</span>
+        <div class="menu-dropdown">
+          <div class="menu-drop-opt" id="menuAlgoBoundary4"><span>Boundary Fill (4-conn)</span></div>
+          <div class="menu-drop-opt" id="menuAlgoBoundary8"><span>Boundary Fill (8-conn)</span></div>
+          <div class="menu-drop-opt" id="menuAlgoFlood4"><span>Flood Fill (4-conn)</span></div>
+          <div class="menu-drop-opt" id="menuAlgoFlood8"><span>Flood Fill (8-conn)</span></div>
+          <div class="menu-drop-opt" id="menuAlgoScanline"><span>Scanline Polygon Fill</span></div>
+          <div class="menu-separator"></div>
+          <div class="menu-drop-opt" id="menuAlgoBresLine"><span>Bresenham's Line</span></div>
+          <div class="menu-drop-opt" id="menuAlgoCircle"><span>Midpoint Circle</span></div>
+          <div class="menu-drop-opt" id="menuAlgoBresCircle"><span>Bresenham's Circle</span></div>
+        </div>
+      </div>
+      <div class="menu-item" id="menuOpenCpp">
+        <span>C++ Lab Code</span>
+      </div>
+      <div class="menu-item" id="menuHelpAbout">
+        <span>Help</span>
+      </div>
+    </div>
+
+    <!-- Main Body Area -->
+    <div class="win-body">
+      
+      <!-- Left Toolbar -->
+      <div class="left-toolbar">
+        <div class="tools-grid">
+          <!-- Pencil / Pen Tool -->
+          <button class="tool-btn active" id="toolPencil" title="Pencil / Freehand (Bresenham interpolation)">
+            <svg viewBox="0 0 16 16">
+              <path d="M12,2 L14,4 L5,13 L2,14 L3,11 Z M11,3 L4,10 M4,10 L6,12" stroke="#000" stroke-width="1.2" fill="none"/>
+            </svg>
+          </button>
+          
+          <!-- Eraser Tool -->
+          <button class="tool-btn" id="toolEraser" title="Eraser">
+            <svg viewBox="0 0 16 16">
+              <polygon points="5,2 14,7 11,14 2,9" fill="#ffb6c1" stroke="#000" stroke-width="1"/>
+              <polygon points="2,9 6.5,11.5 5,14 2,14" fill="#555" stroke="#000" stroke-width="1"/>
+            </svg>
+          </button>
+          
+          <!-- Circle Tool (Bresenham / Midpoint) -->
+          <button class="tool-btn" id="toolCircle" title="Circle (Midpoint Algorithm)">
+            <svg viewBox="0 0 16 16">
+              <circle cx="8" cy="8" r="6" stroke="#000" stroke-width="1.5" fill="none"/>
+            </svg>
+          </button>
+          
+          <!-- Unified Polygon Tool -->
+          <button class="tool-btn" id="toolPolygon" title="Polygon Tool (1-8 and Other)">
+            <svg viewBox="0 0 16 16">
+              <polygon points="8,2 14,6 12,13 4,13 2,6" stroke="#000" stroke-width="1.5" fill="none"/>
+            </svg>
+          </button>
+
+          <!-- Fill Tool (Boundary, Flood, Scanline) -->
+          <button class="tool-btn" id="toolFill" title="Color Fill (Boundary / Flood / Scanline)">
+            <svg viewBox="0 0 16 16">
+              <path d="M3,5 L9,1 M3,5 L7,13 L11,11 L7,3" stroke="#000" stroke-width="1" fill="#fed83d"/>
+              <path d="M12,11 C12,13 14,14 14,12 C14,10 12,11 12,11 Z" fill="#3c44aa"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Tool Options Box (Context Sensitive) -->
+        <div class="tool-options-container" id="toolOptionsContainer">
+          <div class="options-title" id="optionsTitle">Pencil</div>
+          
+          <!-- Thickness Option -->
+          <div id="brushSizeOptions" class="size-option-list">
+            <div class="size-option-item selected" data-size="1"><div class="size-line" style="height: 1px;"></div></div>
+            <div class="size-option-item" data-size="2"><div class="size-line" style="height: 2px;"></div></div>
+            <div class="size-option-item" data-size="3"><div class="size-line" style="height: 3px;"></div></div>
+            <div class="size-option-item" data-size="4"><div class="size-line" style="height: 4px;"></div></div>
+          </div>
+
+          <!-- Circle Sub-Options (Midpoint vs Bresenham) -->
+          <div id="circleOptions" style="display: none; flex-direction: column; gap: 4px;">
+            <label style="font-size: 8px; color: var(--win-darkest);">Circle Algorithm:</label>
+            <select id="circleAlgoSelect" class="suboption-select">
+              <option value="midpoint" selected>1: Midpoint Circle (d = 1-r)</option>
+              <option value="bresenham">2: Bresenham Circle (d = 3-2r)</option>
+            </select>
+          </div>
+
+          <!-- Polygon Sub-Options -->
+          <div id="polygonOptions" style="display: none; flex-direction: column; gap: 4px;">
+            <label style="font-size: 8px; color: var(--win-darkest);">Shape Type:</label>
+            <select id="polygonSelect" class="suboption-select">
+              <option value="1">1: Point / Dot</option>
+              <option value="2">2: Line Segment</option>
+              <option value="3" selected>3: Triangle</option>
+              <option value="4">4: Square</option>
+              <option value="5">5: Pentagon</option>
+              <option value="6">6: Hexagon</option>
+              <option value="7">7: Heptagon</option>
+              <option value="8">8: Octagon</option>
+              <option value="other">Other (Custom N)...</option>
+            </select>
+            <div id="polygonCustomBadge" style="font-size: 8px; color: #000080; display: none;">Edges: <b id="lblCustomN">9</b></div>
+          </div>
+
+          <!-- Fill Algorithm Sub-Options -->
+          <div id="fillOptions" style="display: none; flex-direction: column; gap: 4px;">
+            <label style="font-size: 8px; color: var(--win-darkest);">Fill Algorithm:</label>
+            <select id="fillAlgoSelect" class="suboption-select">
+              <option value="boundary" selected>1: Boundary Fill</option>
+              <option value="flood">2: Flood Fill</option>
+              <option value="scanline">3: Scanline Fill (Raster / ET)</option>
+            </select>
+
+            <!-- Connectivity Options (4-connected & 8-connected) -->
+            <div id="fillConnectivityRow" style="display: flex; flex-direction: column; gap: 2px; margin-top: 2px;">
+              <label style="font-size: 8px; color: var(--win-darkest);">Connectivity:</label>
+              <select id="fillConnectivitySelect" class="suboption-select">
+                <option value="4" selected>4-Connected (Orthogonal)</option>
+                <option value="8">8-Connected (Diagonals included)</option>
+              </select>
+            </div>
+
+            <!-- Boundary Fill Specific Setting: Boundary Color mode -->
+            <div id="boundaryFillColorRow" style="display: flex; flex-direction: column; gap: 2px; margin-top: 2px;">
+              <label style="font-size: 8px; color: var(--win-darkest);">Boundary Stop Color:</label>
+              <select id="boundaryColorSelect" class="suboption-select">
+                <option value="auto" selected>Auto (Drawn Border)</option>
+                <option value="primary">Primary Color</option>
+                <option value="secondary">Secondary Color</option>
+                <option value="black">Black (#1D1D21)</option>
+              </select>
+            </div>
+            <span style="font-size: 7px; color: #555; line-height: 1.1;">Click seed point on canvas to fill with primary (L-click) or secondary (R-click)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Workspace (Canvas + Vertical Iteration Slider) -->
+      <div class="center-workspace" id="canvasScrollArea">
+        
+        <div class="canvas-viewport-wrapper" id="canvasViewport">
+          <!-- Main Drawing Canvas -->
+          <canvas id="paintCanvas" width="32" height="32"></canvas>
+          
+          <!-- Pixel Grid Overlay for 16x16 & 32x32 -->
+          <div class="pixel-grid-overlay active" id="pixelGridOverlay"></div>
+        </div>
+
+        <!-- Vertical Iteration Slider (Only Active for 16x16 & 32x32) -->
+        <div class="vertical-slider-container active" id="vSliderContainer">
+          <div class="slider-label-top" id="vSliderTopLabel">MAX</div>
+          <div class="v-slider-track-wrap">
+            <input type="range" class="v-slider" id="vIterationSlider" min="0" max="0" value="0" step="1">
+          </div>
+          <div class="slider-label-bottom">0</div>
+          <div class="v-slider-value-display" id="vSliderValue">0 / 0</div>
+        </div>
+
+      </div>
+
+      <!-- Right Panel (Photoshop / Advanced Settings in Win95 Theme) -->
+      <div class="right-panel">
+        
+        <!-- 1. Coordinates Inspector Box -->
+        <div class="panel-group">
+          <div class="panel-group-title">
+            <span>Coordinates Inspector</span>
+          </div>
+          <div class="coord-grid">
+            <div class="coord-cell">
+              <span class="coord-label">Cursor (X, Y)</span>
+              <span class="coord-val" id="lblCursorCoord">0, 0</span>
+            </div>
+            <div class="coord-cell">
+              <span class="coord-label">Start (X₀, Y₀)</span>
+              <span class="coord-val" id="lblStartCoord">-- , --</span>
+            </div>
+            <div class="coord-cell">
+              <span class="coord-label">Delta (ΔX, ΔY)</span>
+              <span class="coord-val" id="lblDeltaCoord">0, 0</span>
+            </div>
+            <div class="coord-cell">
+              <span class="coord-label">Dist / Radius</span>
+              <span class="coord-val" id="lblDistCoord">0 px</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Canvas Size Selector -->
+        <div class="panel-group">
+          <div class="panel-group-title">
+            <span>Canvas Size Preset</span>
+          </div>
+          <div class="win-listbox" id="canvasSizeListBox">
+            <div class="win-list-item" data-w="595" data-h="842" data-mode="normal">
+              <span>A4 (Document)</span><span>595×842</span>
+            </div>
+            <div class="win-list-item" data-w="640" data-h="480" data-mode="normal">
+              <span>480p Standard</span><span>640×480</span>
+            </div>
+            <div class="win-list-item" data-w="500" data-h="500" data-mode="normal">
+              <span>500 × 500 Square</span><span>500×500</span>
+            </div>
+            <div class="win-list-item" data-w="100" data-h="100" data-mode="normal">
+              <span>100 × 100 Pixel</span><span>100×100</span>
+            </div>
+            <div class="win-list-item" data-w="64" data-h="64" data-mode="normal">
+              <span>64 × 64 Pixel</span><span>64×64</span>
+            </div>
+            <div class="win-list-item selected" data-w="32" data-h="32" data-mode="step">
+              <span>32 × 32 Grid</span><span class="win-badge-special">Visualizer</span>
+            </div>
+            <div class="win-list-item" data-w="16" data-h="16" data-mode="step">
+              <span>16 × 16 Grid</span><span class="win-badge-special">Visualizer</span>
+            </div>
+          </div>
+          <span style="font-size: 8px; color: #555;">* 16×16 & 32×32 enable pixel grid & step visualizer slider.</span>
+        </div>
+
+        <!-- 3. Algorithm Step-by-Step Inspector (Only for 16x16 & 32x32) -->
+        <div class="panel-group iteration-panel active" id="iterationPanel">
+          <div class="panel-group-title">
+            <span>Algorithm Iteration</span>
+            <span id="badgeAlgoName" style="margin-left: auto; font-size: 8px; background: #000080; color: #fff; padding: 0 4px;">Ready</span>
+          </div>
+          
+          <div class="step-info-box" id="stepInfoBox">
+            Draw a shape or click Fill to record algorithm execution steps.
+          </div>
+
+          <div class="playback-controls">
+            <button class="win-btn" id="btnStepFirst" title="First step">|&lt;</button>
+            <button class="win-btn" id="btnStepPrev" title="Previous step">&lt;</button>
+            <button class="win-btn" id="btnStepPlay" title="Play / Pause">▶</button>
+            <button class="win-btn" id="btnStepNext" title="Next step">&gt;</button>
+            <button class="win-btn" id="btnStepLast" title="Last step">&gt;|</button>
+          </div>
+
+          <div class="speed-row">
+            <span>Speed:</span>
+            <select id="selStepSpeed" class="suboption-select" style="width: 80px;">
+              <option value="400">Slow (400ms)</option>
+              <option value="150" selected>Medium (150ms)</option>
+              <option value="40">Fast (40ms)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 4. Active Color Indicators -->
+        <div class="panel-group">
+          <div class="panel-group-title">
+            <span>Active Colors</span>
+          </div>
+          <div class="color-preview-container">
+            <div class="color-preview-box">
+              <div class="color-swatch-primary" id="boxPrimaryColor" style="background-color: #1D1D21;"></div>
+              <div class="color-swatch-secondary" id="boxSecondaryColor" style="background-color: #F9FFFE;"></div>
+            </div>
+            <div class="color-info-text">
+              <div><b>Primary (L-Click):</b> <span id="lblPrimaryHex">#1D1D21</span></div>
+              <div><b>Secondary (R-Click):</b> <span id="lblSecondaryHex">#F9FFFE</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Palette Area (16 Minecraft Colors) -->
+    <div class="win-palette-area">
+      <div class="palette-label">Minecraft 16 Colors</div>
+      <div class="minecraft-palette-grid" id="minecraftPaletteGrid">
+        <!-- 16 Minecraft Colors generated by JS -->
+      </div>
+      <div style="font-size: 8px; color: #444; margin-left: 4px;">
+        Left-click: Primary | Right-click: Secondary
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="win-statusbar">
+      <div class="status-cell status-main" id="statusHelpText">For Help, click Help Topics on the Help Menu.</div>
+      <div class="status-cell status-coords" id="statusCoord">0, 0 px</div>
+      <div class="status-cell status-size" id="statusSize">32 × 32 px</div>
+    </div>
+
+  </div>
+
+  <!-- Custom N Polygon Modal Dialog -->
+  <div class="win-modal-backdrop" id="modalOtherPolygon">
+    <div class="win-dialog">
+      <div class="win-titlebar">
+        <div class="win-title-left"><span>Regular Polygon Settings</span></div>
+        <div class="win-title-buttons"><button class="win-btn-control" id="btnCloseOtherModal">✕</button></div>
+      </div>
+      <div class="win-dialog-body">
+        <p>Enter the number of edges for the polygon (N &gt; 8):</p>
+        <input type="number" id="inputCustomN" class="win-input-text" min="3" max="100" value="9">
+        <span style="font-size: 9px; color: #555;">Examples: 9 (Nonagon), 10 (Decagon), 12 (Dodecagon)</span>
+      </div>
+      <div class="win-dialog-buttons">
+        <button class="win-btn" style="min-width: 60px;" id="btnApplyCustomN">OK</button>
+        <button class="win-btn" style="min-width: 60px;" id="btnCancelCustomN">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- C++ Course Algorithms Reference Modal Dialog -->
+  <div class="win-modal-backdrop" id="modalCppCode">
+    <div class="win-dialog" style="max-width: 820px; width: 90vw;">
+      <div class="win-titlebar">
+        <div class="win-title-left"><span>C++ Computer Graphics Algorithms Reference (College Coursework)</span></div>
+        <div class="win-title-buttons"><button class="win-btn-control" id="btnCloseCppModal">✕</button></div>
+      </div>
+      <div class="win-dialog-body">
+        <div class="tab-bar-win" id="cppTabBar">
+          <button class="tab-btn active" data-tab="bresenhamLine">Bresenham Line</button>
+          <button class="tab-btn" data-tab="midpointCircle">Midpoint Circle</button>
+          <button class="tab-btn" data-tab="bresenhamCircle">Bresenham Circle</button>
+          <button class="tab-btn" data-tab="boundaryFill">Boundary Fill</button>
+          <button class="tab-btn" data-tab="floodFill">Flood Fill</button>
+          <button class="tab-btn" data-tab="scanlineFill">Scanline Fill (ET/AET)</button>
+          <button class="tab-btn" data-tab="bmpExport">BMP File Export</button>
+        </div>
+        <div class="cpp-code-container" id="cppCodeDisplay">
+          // Loading C++ Reference Code...
+        </div>
+      </div>
+      <div class="win-dialog-buttons">
+        <button class="win-btn" id="btnCopyCppCode">Copy C++ Code</button>
+        <button class="win-btn" id="btnCloseCppModalBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (modular) -->
+  <script src="algorithms.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/palette.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/drawing.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/ui-events.js"></script>
+  <script src="js/cpp-reference.js"></script>
+</body>
+</html>
