@@ -464,9 +464,29 @@ input[type="range"].v-slider::-webkit-slider-thumb {
   min-width: 40px;
 }
 
+/* --- Draggable Splitter Handle between Workspace & Right Panel --- */
+.panel-resizer-handle {
+  width: 6px;
+  cursor: ew-resize;
+  background: var(--win-bg);
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-darkest);
+  box-shadow: inset 1px 0 0 #fff;
+  user-select: none;
+  z-index: 10;
+  transition: background 0.15s;
+}
+
+.panel-resizer-handle:hover,
+.panel-resizer-handle.resizing {
+  background: #000080;
+}
+
 /* --- Right Settings Panel (Photoshop style in Win95 aesthetic) --- */
 .right-panel {
-  width: 250px;
+  width: 320px;
+  min-width: 250px;
+  max-width: 900px;
   background: var(--win-bg);
   border-left: 1px solid var(--win-light);
   display: flex;
@@ -474,6 +494,50 @@ input[type="range"].v-slider::-webkit-slider-thumb {
   gap: 6px;
   padding: 6px;
   overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Width Control Header Bar */
+.panel-width-control-bar {
+  background: #dfdfdf;
+  border-top: 1px solid var(--win-light);
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-darkest);
+  border-bottom: 1px solid var(--win-darkest);
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.panel-width-slider {
+  cursor: pointer;
+  accent-color: #000080;
+}
+
+.win-btn-xs {
+  background: var(--win-bg);
+  border-top: 1px solid var(--win-light);
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-darkest);
+  border-bottom: 1px solid var(--win-darkest);
+  padding: 1px 5px;
+  font-size: 8px;
+  font-family: var(--font-win);
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.win-btn-xs:active {
+  border-top: 1px solid var(--win-darkest);
+  border-left: 1px solid var(--win-darkest);
+  border-right: 1px solid var(--win-light);
+  border-bottom: 1px solid var(--win-light);
+}
+
+.win-btn-xs.active {
+  background: #000080;
+  color: #fff;
 }
 
 .panel-group {
@@ -872,4 +936,110 @@ input[type="range"].v-slider::-webkit-slider-thumb {
   font-weight: bold;
   border-bottom: 1px solid #dfdfdf;
   margin-bottom: -1px;
+}
+
+/* Decision Parameters Table Panel */
+.decision-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.table-formula-info {
+  font-size: 10px;
+  color: #000080;
+  background: #ffffff;
+  padding: 4px 6px;
+  border-top: 1px solid var(--win-dark);
+  border-left: 1px solid var(--win-dark);
+  border-right: 1px solid var(--win-light);
+  border-bottom: 1px solid var(--win-light);
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.decision-table-wrapper {
+  max-height: 220px;
+  overflow: auto;
+  background: #ffffff;
+  border-top: 2px solid var(--win-darkest);
+  border-left: 2px solid var(--win-darkest);
+  border-right: 2px solid var(--win-light);
+  border-bottom: 2px solid var(--win-light);
+}
+
+.win-param-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.win-param-table th {
+  position: sticky;
+  top: 0;
+  background: #ece9d8;
+  border-top: 1px solid var(--win-light);
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-darkest);
+  border-bottom: 1px solid var(--win-darkest);
+  padding: 4px 8px;
+  text-align: center;
+  font-weight: bold;
+  z-index: 2;
+  color: var(--win-darkest);
+  font-size: 11px;
+}
+
+.win-param-table td {
+  padding: 4px 8px;
+  border: 1px solid #d0d0d0;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.win-param-table tr:nth-child(even) td {
+  background: #f4f6fa;
+}
+
+.win-param-table tr.active-row td {
+  background: #000080 !important;
+  color: #ffffff !important;
+  font-weight: bold;
+}
+
+.win-param-table tr.future-row td {
+  color: #888888;
+  background: #fbfbfb;
+}
+
+.win-param-table tr.highlight-octant td {
+  background: #e1ecfa;
+}
+
+/* Solo Mode: when user clicks Decision Parameter Table section, it becomes the ONLY thing showing in the right panel! */
+.right-panel.solo-param-table .panel-group:not(#decisionParamPanel) {
+  display: none !important;
+}
+
+.right-panel.solo-param-table {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.right-panel.solo-param-table #decisionParamPanel {
+  flex: 1 1 auto;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100%;
+}
+
+.right-panel.solo-param-table .decision-table-wrapper {
+  max-height: none !important;
+  flex: 1 1 auto;
+  height: calc(100vh - 170px);
 }

@@ -32,14 +32,16 @@ window.PaintStudio = window.PaintStudio || {};
     displayScale: 15,
     isStepMode: true, // Enabled for 16x16 and 32x32
 
-    currentTool: 'pencil', // 'pencil', 'eraser', 'circle', 'polygon', 'fill'
+    currentTool: 'pencil', // 'pencil', 'eraser', 'line', 'circle', 'polygon', 'fill'
     brushSize: 1,
 
+    lineAlgorithm: 'dda', // 'dda', 'bresenham'
     circleAlgorithm: 'midpoint', // 'midpoint', 'bresenham'
+    showDecisionParams: true,
     lastCircle: null,
     lastStrokeColor: PS.MC_COLORS[3].rgb, // Default Black
 
-    polygonType: '3', // '1'..'8', or 'other'
+    polygonType: '3', // '3'..'8', or 'other'
     customPolygonN: 9,
     lastPolygonVertices: null,
 

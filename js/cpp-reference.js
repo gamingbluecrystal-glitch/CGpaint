@@ -19,6 +19,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- C++ Course Code Reference Modal Data ---
   const CPP_CODE_SAMPLES = {
+    ddaLine: `// ==========================================
+// DDA Line Drawing Algorithm (C++)
+// Standard University Computer Graphics Lab
+// ==========================================
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+
+struct Point { int x, y; };
+
+std::vector<Point> ddaLine(int x0, int y0, int x1, int y1) {
+    std::vector<Point> points;
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+    int steps = std::max(std::abs(dx), std::abs(dy));
+    if (steps == 0) {
+        points.push_back({x0, y0});
+        return points;
+    }
+
+    float xInc = (float)dx / steps;
+    float yInc = (float)dy / steps;
+    float x = x0;
+    float y = y0;
+
+    for (int k = 0; k <= steps; ++k) {
+        points.push_back({ (int)std::round(x), (int)std::round(y) });
+        x += xInc;
+        y += yInc;
+    }
+    return points;
+}`,
+
     bresenhamLine: `// ==========================================
 // Bresenham's Line Drawing Algorithm (C++)
 // Standard University Computer Graphics Lab
@@ -480,8 +514,27 @@ void saveBMP(const char* filename, int W, int H, const std::vector<std::vector<C
     openCppModal('floodFill');
   });
 
-  bindMenu('menuAlgoScanline', () => openCppModal('scanlineFill'));
-  bindMenu('menuAlgoBresLine', () => openCppModal('bresenhamLine'));
+  bindMenu('menuAlgoScanline', () => {
+    PS.selectTool('fill');
+    state.fillAlgorithm = 'scanline';
+    const fas = document.getElementById('fillAlgoSelect');
+    if (fas) fas.value = 'scanline';
+    openCppModal('scanlineFill');
+  });
+  bindMenu('menuAlgoDDALine', () => {
+    PS.selectTool('line');
+    state.lineAlgorithm = 'dda';
+    const las = document.getElementById('lineAlgoSelect');
+    if (las) las.value = 'dda';
+    openCppModal('ddaLine');
+  });
+  bindMenu('menuAlgoBresLine', () => {
+    PS.selectTool('line');
+    state.lineAlgorithm = 'bresenham';
+    const las = document.getElementById('lineAlgoSelect');
+    if (las) las.value = 'bresenham';
+    openCppModal('bresenhamLine');
+  });
   bindMenu('menuAlgoCircle', () => {
     PS.selectTool('circle');
     state.circleAlgorithm = 'midpoint';

@@ -63,6 +63,7 @@
           <div class="menu-drop-opt" id="menuAlgoFlood8"><span>Flood Fill (8-conn)</span></div>
           <div class="menu-drop-opt" id="menuAlgoScanline"><span>Scanline Polygon Fill</span></div>
           <div class="menu-separator"></div>
+          <div class="menu-drop-opt" id="menuAlgoDDALine"><span>DDA Line</span></div>
           <div class="menu-drop-opt" id="menuAlgoBresLine"><span>Bresenham's Line</span></div>
           <div class="menu-drop-opt" id="menuAlgoCircle"><span>Midpoint Circle</span></div>
           <div class="menu-drop-opt" id="menuAlgoBresCircle"><span>Bresenham's Circle</span></div>
@@ -96,6 +97,13 @@
               <polygon points="2,9 6.5,11.5 5,14 2,14" fill="#555" stroke="#000" stroke-width="1"/>
             </svg>
           </button>
+
+          <!-- Line Tool (DDA / Bresenham) -->
+          <button class="tool-btn" id="toolLine" title="Line Tool (DDA / Bresenham)">
+            <svg viewBox="0 0 16 16">
+              <line x1="2" y1="14" x2="14" y2="2" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
           
           <!-- Circle Tool (Bresenham / Midpoint) -->
           <button class="tool-btn" id="toolCircle" title="Circle (Midpoint Algorithm)">
@@ -105,7 +113,7 @@
           </button>
           
           <!-- Unified Polygon Tool -->
-          <button class="tool-btn" id="toolPolygon" title="Polygon Tool (1-8 and Other)">
+          <button class="tool-btn" id="toolPolygon" title="Polygon Tool (3-8 and Other)">
             <svg viewBox="0 0 16 16">
               <polygon points="8,2 14,6 12,13 4,13 2,6" stroke="#000" stroke-width="1.5" fill="none"/>
             </svg>
@@ -132,6 +140,15 @@
             <div class="size-option-item" data-size="4"><div class="size-line" style="height: 4px;"></div></div>
           </div>
 
+          <!-- Line Sub-Options (DDA vs Bresenham) -->
+          <div id="lineOptions" style="display: none; flex-direction: column; gap: 4px;">
+            <label style="font-size: 8px; color: var(--win-darkest);">Line Algorithm:</label>
+            <select id="lineAlgoSelect" class="suboption-select">
+              <option value="dda" selected>1: DDA Line (Digital Diff.)</option>
+              <option value="bresenham">2: Bresenham's Line</option>
+            </select>
+          </div>
+
           <!-- Circle Sub-Options (Midpoint vs Bresenham) -->
           <div id="circleOptions" style="display: none; flex-direction: column; gap: 4px;">
             <label style="font-size: 8px; color: var(--win-darkest);">Circle Algorithm:</label>
@@ -145,8 +162,6 @@
           <div id="polygonOptions" style="display: none; flex-direction: column; gap: 4px;">
             <label style="font-size: 8px; color: var(--win-darkest);">Shape Type:</label>
             <select id="polygonSelect" class="suboption-select">
-              <option value="1">1: Point / Dot</option>
-              <option value="2">2: Line Segment</option>
               <option value="3" selected>3: Triangle</option>
               <option value="4">4: Square</option>
               <option value="5">5: Pentagon</option>
@@ -214,9 +229,25 @@
 
       </div>
 
+      <!-- Draggable Splitter Resizer for Right Panel -->
+      <div class="panel-resizer-handle" id="rightPanelResizer" title="Drag left/right to resize right panel"></div>
+
       <!-- Right Panel (Photoshop / Advanced Settings in Win95 Theme) -->
-      <div class="right-panel">
+      <div class="right-panel" id="rightPanel">
         
+        <!-- Panel Width Slider & Controls -->
+        <div class="panel-width-control-bar" id="panelWidthControlBar">
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 8px; color: var(--win-darkest);">
+            <span><b>Panel Width:</b> <span id="lblPanelWidthVal">320px</span></span>
+            <div style="display: flex; gap: 2px;">
+              <button class="win-btn-xs" id="btnWidthCompact" title="Compact 260px">260px</button>
+              <button class="win-btn-xs" id="btnWidthMedium" title="Medium 420px">420px</button>
+              <button class="win-btn-xs" id="btnWidthWide" title="Wide 620px">620px</button>
+            </div>
+          </div>
+          <input type="range" class="panel-width-slider" id="panelWidthSlider" min="250" max="750" value="320" style="width: 100%; margin: 2px 0;">
+        </div>
+
         <!-- 1. Coordinates Inspector Box -->
         <div class="panel-group">
           <div class="panel-group-title">
@@ -300,6 +331,35 @@
               <option value="40">Fast (40ms)</option>
             </select>
           </div>
+
+          <div class="table-toggle-row" style="margin-top: 4px; padding-top: 3px; border-top: 1px dashed var(--win-dark); display: flex; align-items: center; gap: 4px; font-size: 8px;">
+            <input type="checkbox" id="chkShowDecisionParams" checked>
+            <label for="chkShowDecisionParams" style="cursor: pointer; user-select: none; font-weight: bold; color: var(--win-darkest);">Show Decision Parameters</label>
+          </div>
+        </div>
+
+        <!-- 3b. Decision Parameters Table (For 16x16 & 32x32) -->
+        <div class="panel-group decision-panel active" id="decisionParamPanel">
+          <div class="panel-group-title" id="decisionParamTitleBar" style="cursor: pointer;" title="Click to toggle solo full-height view for this table">
+            <span id="paramTableTitle">Decision Parameters Table</span>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
+              <span id="paramTableAlgoBadge" style="font-size: 8px; background: #008080; color: #fff; padding: 0 4px;">Table</span>
+              <button class="win-btn-xs" id="btnToggleSoloTable" title="Click to view only this table in right panel">🗖 Solo Table</button>
+            </div>
+          </div>
+          <div class="table-formula-info" id="paramTableFormula">
+            Draw a line or circle in 16×16 or 32×32 to view step-by-step decision parameters.
+          </div>
+          <div class="decision-table-wrapper" id="decisionTableWrapper">
+            <table class="win-param-table" id="decisionParamTable">
+              <thead>
+                <tr id="paramTableHeadRow"></tr>
+              </thead>
+              <tbody id="paramTableBody">
+                <!-- Populated dynamically as iterations proceed -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- 4. Active Color Indicators -->
@@ -370,7 +430,8 @@
       </div>
       <div class="win-dialog-body">
         <div class="tab-bar-win" id="cppTabBar">
-          <button class="tab-btn active" data-tab="bresenhamLine">Bresenham Line</button>
+          <button class="tab-btn active" data-tab="ddaLine">DDA Line</button>
+          <button class="tab-btn" data-tab="bresenhamLine">Bresenham Line</button>
           <button class="tab-btn" data-tab="midpointCircle">Midpoint Circle</button>
           <button class="tab-btn" data-tab="bresenhamCircle">Bresenham Circle</button>
           <button class="tab-btn" data-tab="boundaryFill">Boundary Fill</button>

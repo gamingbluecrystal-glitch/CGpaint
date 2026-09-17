@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toolButtons = {
     pencil: document.getElementById('toolPencil'),
     eraser: document.getElementById('toolEraser'),
+    line: document.getElementById('toolLine'),
     circle: document.getElementById('toolCircle'),
     polygon: document.getElementById('toolPolygon'),
     fill: document.getElementById('toolFill')
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const optionsTitle = document.getElementById('optionsTitle');
   const brushSizeOptions = document.getElementById('brushSizeOptions');
+  const lineOptions = document.getElementById('lineOptions');
   const circleOptions = document.getElementById('circleOptions');
   const polygonOptions = document.getElementById('polygonOptions');
   const fillOptions = document.getElementById('fillOptions');
@@ -28,11 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
   PS.selectTool = function (toolName) {
     state.currentTool = toolName;
     Object.keys(toolButtons).forEach(t => {
-      toolButtons[t].classList.toggle('active', t === toolName);
+      if (toolButtons[t]) {
+        toolButtons[t].classList.toggle('active', t === toolName);
+      }
     });
 
     // Update options panel
     brushSizeOptions.style.display = 'none';
+    if (lineOptions) lineOptions.style.display = 'none';
     circleOptions.style.display = 'none';
     polygonOptions.style.display = 'none';
     fillOptions.style.display = 'none';
@@ -41,6 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
       optionsTitle.textContent = toolName === 'pencil' ? 'Pencil' : 'Eraser';
       brushSizeOptions.style.display = 'flex';
       statusHelpText.textContent = `${toolName === 'pencil' ? 'Pencil' : 'Eraser'}: Drag mouse on canvas to draw freehand.`;
+    } else if (toolName === 'line') {
+      const algoLabel = state.lineAlgorithm === 'dda' ? 'DDA' : "Bresenham's";
+      optionsTitle.textContent = `Line (${algoLabel})`;
+      brushSizeOptions.style.display = 'flex';
+      if (lineOptions) lineOptions.style.display = 'flex';
+      statusHelpText.textContent = `Line Tool: Click and drag to draw straight line using ${algoLabel} Algorithm.`;
     } else if (toolName === 'circle') {
       const algoLabel = state.circleAlgorithm === 'bresenham' ? "Bresenham's" : 'Midpoint';
       optionsTitle.textContent = `Circle (${algoLabel})`;
@@ -72,11 +83,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return CGAlgorithms.midpointCircle(xc, yc, r);
   };
 
+  PS.getLinePoints = function (x0, y0, x1, y1) {
+    if (state.lineAlgorithm === 'dda') {
+      return CGAlgorithms.ddaLine(x0, y0, x1, y1);
+    }
+    return CGAlgorithms.bresenhamLine(x0, y0, x1, y1);
+  };
+
   PS.updatePolygonHelpText = function () {
     const pType = state.polygonType;
-    if (pType === '1') statusHelpText.textContent = 'Polygon (1): Click to plot single point/dot.';
-    else if (pType === '2') statusHelpText.textContent = 'Polygon (2): Click and drag to draw Bresenham line segment.';
-    else if (pType === 'other') statusHelpText.textContent = `Polygon: Drag to draw regular ${state.customPolygonN}-sided polygon.`;
+    if (pType === 'other') statusHelpText.textContent = `Polygon: Drag to draw regular ${state.customPolygonN}-sided polygon.`;
     else statusHelpText.textContent = `Polygon: Drag to draw regular ${pType}-sided polygon.`;
   };
 });

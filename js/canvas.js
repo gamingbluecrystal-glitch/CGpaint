@@ -101,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
   PS.setPixel = function (x, y, colorRgba, size = 1) {
     if (x < 0 || x >= state.canvasWidth || y < 0 || y >= state.canvasHeight) return;
 
-    ctx.fillStyle = `rgba(${colorRgba[0]}, ${colorRgba[1]}, ${colorRgba[2]}, ${colorRgba[3] / 255})`;
+    const alpha = (colorRgba.length > 3 && colorRgba[3] !== undefined) ? (colorRgba[3] / 255) : 1;
+    ctx.fillStyle = `rgba(${colorRgba[0]}, ${colorRgba[1]}, ${colorRgba[2]}, ${alpha})`;
 
     if (size <= 1) {
       ctx.fillRect(x, y, 1, 1);
