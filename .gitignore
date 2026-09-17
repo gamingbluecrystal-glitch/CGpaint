@@ -3,3 +3,8 @@
 Thumbs.db
 .vscode/
 .idea/
+*.exe
+*.o
+*.obj
+*.bmp
+
